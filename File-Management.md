@@ -1,8 +1,8 @@
-#File Mangement Programs
+##File Mangement Programs
 
 ---
 
-## 1 .Write a C program to create a new text file and write "Hello, World!" to it?
+# 1 .Write a C program to create a new text file and write "Hello, World!" to it?
 
 ```c
 #include<stdio.h>
