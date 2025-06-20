@@ -64,5 +64,65 @@ int main()
         close(fd);
         return 0;
 }
+```
+## Implement a C program to create a new directory named "Test" in the current 
+directory? 
+
+```c
+#include<stdio.h>
+#include<dirent.h>
+#include<sys/stat.h>
+
+int main()
+{
+        const char *dirname = "Test";
+        if(mkdir(dirname,0755) !=0)
+        {
+                perror("Error creating directory");
+                return 1;
+        }
+        printf("Directory created successfully!\n");
+        return 0;
+}
+```
+## Write a C program to check if a file named "sample.txt" exists in the current directory?
+```c
+#include<stdio.h>
+#include<unistd.h>
+
+int main()
+{
+        const char *file = "sample.txt";
+
+        if(access(file,F_OK) == 0)
+        {
+                printf("File '%s' exists\n",file);
+        }
+        else
+        {
+                perror("File check");
+                return 1;
+        }
+        return 0;
+}
+```
+## Develop a C program to rename a file from "oldname.txt" to "newname.txt"?
+```c
+#include<stdio.h>
+#include<unistd.h>
+
+int main()
+{
+        const char *oldname = "oldname.txt";
+        const char *newname = "newname.txt";
+
+        if(rename(oldname,newname) != 0)
+        {
+                perror("Error renaming file");
+                return 1;
+        }
+        printf("File renamed successfully!\n");
+        return 0;
+}
 
 
