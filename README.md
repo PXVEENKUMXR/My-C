@@ -1,4 +1,4 @@
-# 🔧 Linux Kernel Subsystems & File Operations in C
+# Linux Kernel Subsystems & File Operations in C
 
 This repository provides a hands-on introduction to Linux **kernel subsystems** through practical C programs demonstrating **low-level file operations** using system calls like `open()`, `read()`, `write()`, and more.
 
@@ -6,7 +6,7 @@ These programs are intended for students, system programmers, and Linux enthusia
 
 ---
 
-## 📚 Table of Contents
+## Table of Contents
 
 - [1. Overview of Linux Kernel Subsystems](#1-overview-of-linux-kernel-subsystems)
 - [2. File Operations via System Calls](#2-file-operations-via-system-calls)
@@ -61,3 +61,23 @@ The VFS abstracts access to various filesystems (ext4, FAT, tmpfs). All file ope
 int fd = open("file.txt", O_WRONLY | O_CREAT, 0644);
 write(fd, "Hello", 5);
 close(fd);
+### 3.2 🧵 Process Management
+
+The kernel handles **process creation**, **termination**, and **state transitions** using system calls like `fork()`, `exec()`, and `wait()`. These are foundational for multitasking in Linux.
+
+#### 🔹 Example
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+int main() {
+    pid_t pid = fork();
+    if (pid == 0) {
+        printf("Child process\n");
+    } else {
+        wait(NULL);
+        printf("Parent process\n");
+    }
+    return 0;
+}
