@@ -1,97 +1,63 @@
-# File Operations in C (Linux System Programming)
+# 🔧 Linux Kernel Subsystems & File Operations in C
 
-This repository contains a comprehensive set of C programs that demonstrate how to perform low-level file operations using Linux system calls. These operations are fundamental in understanding how Linux handles files at the kernel level, bypassing standard I/O libraries like stdio.h.
+This repository provides a hands-on introduction to Linux **kernel subsystems** through practical C programs demonstrating **low-level file operations** using system calls like `open()`, `read()`, `write()`, and more.
 
----
-
-## Table of Contents
-
-- [1. Introduction to File Operations](#1-introduction-to-file-operations)
-- [2. File Descriptors and File Abstraction in Linux](#2-file-descriptors-and-file-abstraction-in-linux)
-- [3. Why Use System Calls Instead of Standard I/O?](#3-why-use-system-calls-instead-of-standard-io)
-- [4. Common System Calls for File Operations](#4-common-system-calls-for-file-operations)
-- [5. Error Handling and Return Values](#5-error-handling-and-return-values)
-  
----
-
-## 1. Introduction to File Operations
-
-In Linux, almost everything is treated as a file: text files, binary files, devices, sockets, and even pipes. Understanding how to work with files at the system call level is essential for writing efficient and portable system software.
-
-File operations include:
-
-- Creating files
-- Opening files
-- Reading from files
-- Writing to files
-- Appending to files
-- Fetching metadata (size, permissions, timestamps)
-- Deleting or renaming files
-
-These operations are done using low-level APIs provided by the *POSIX standard*, which interact directly with the Linux kernel.
+These programs are intended for students, system programmers, and Linux enthusiasts who want to understand how system calls interact directly with various kernel components.
 
 ---
 
-## 2. File Descriptors and File Abstraction in Linux
+## 📚 Table of Contents
 
-When you open a file in Linux using the open() system call, the kernel returns an *integer file descriptor*. This FD represents an entry in the process's file descriptor table.
-
-| File Descriptor | Meaning         |
-|-----------------|-----------------|
-| 0               | Standard Input  |
-| 1               | Standard Output |
-| 2               | Standard Error  |
-| 3+              | User files      |
-
-All file operations (read(), write(), etc.) use this FD to refer to the file.
+- [1. Overview of Linux Kernel Subsystems](#1-overview-of-linux-kernel-subsystems)
+- [2. File Operations via System Calls](#2-file-operations-via-system-calls)
+- [3. Key Kernel Subsystems](#3-key-kernel-subsystems)
+  - [3.1 Virtual File System (VFS)](#31-virtual-file-system-vfs)
+  - [3.2 Process Management](#32-process-management)
+  - [3.3 Memory Management](#33-memory-management)
+  - [3.4 Inter-Process Communication (IPC)](#34-inter-process-communication-ipc)
+  - [3.5 Device Drivers](#35-device-drivers)
+- [4. Common System Calls](#4-common-system-calls)
+- [5. Error Handling](#5-error-handling)
+- [6. How to Compile & Run](#6-how-to-compile--run)
+- [7. License](#7-license)
 
 ---
 
-## 3. Why Use System Calls Instead of Standard I/O?
+## 1. Overview of Linux Kernel Subsystems
 
-Standard I/O functions like fopen() and fgets() are convenient but abstracted. System calls give you *fine-grained control*, which is critical for:
+The Linux kernel is modular and consists of several key subsystems:
 
+- **VFS (Virtual File System)** – unified interface for all filesystems.
+- **Scheduler** – manages process execution and CPU time.
+- **Memory Manager** – handles physical and virtual memory.
+- **IPC (Inter-Process Communication)** – enables processes to exchange data.
+- **Networking Stack** – manages sockets and protocols.
+- **Device Drivers** – control access to hardware.
+
+---
+
+## 2. File Operations via System Calls
+
+Linux provides low-level system calls for file manipulation, allowing direct interaction with the kernel. These operations bypass the standard C library (`stdio.h`) and use:
+
+- `open()`, `read()`, `write()`, `close()`
+- `lseek()`, `stat()`, `unlink()`, etc.
+
+These are essential for:
 - Embedded systems
-- OS-level programming
-- Drivers and kernel modules
-- High-performance or real-time applications
-
-### Comparison:
-
-| Standard I/O (stdio.h)  | System Call (fcntl.h, unistd.h) |
-|---------------------------|--------------------------------------|
-| fopen()                 | open()                             |
-| fread(), fwrite()     | read(), write()                  |
-| fclose()                | close()                            |
-| Buffered                  | Unbuffered (immediate sys call)      |
+- Real-time applications
+- OS and kernel-level development
 
 ---
 
-## 4. Common System Calls for File Operations
+## 3. Key Kernel Subsystems
 
-| System Call | Header         | Purpose                                        |
-|-------------|----------------|------------------------------------------------|
-| open()    | <fcntl.h>    | Open/create a file and get file descriptor     |
-| read()    | <unistd.h>   | Read bytes from a file                         |
-| write()   | <unistd.h>   | Write bytes to a file                          |
-| close()   | <unistd.h>   | Close the file descriptor                      |
-| lseek()   | <unistd.h>   | Move file pointer (like cursor)                |
-| stat()    | <sys/stat.h> | Get file metadata (permissions, size, etc.)    |
-| unlink()  | <unistd.h>   | Delete a file                                  |
+### 3.1 Virtual File System (VFS)
 
-Each system call returns a value:
-- ≥0 indicates success (often a descriptor or byte count)
-- -1 indicates an error (use perror() or strerror(errno) to debug)
+The VFS abstracts access to various filesystems (ext4, FAT, tmpfs). All file operations go through this layer.
 
----
-
-## 5. Error Handling and Return Values
-
-System calls are *not guaranteed to succeed*. Always check the return value:
-
+**Example:**
 ```c
-int fd = open("file.txt", O_RDONLY);
-if (fd == -1) {
-    perror("open failed");
-    exit(EXIT_FAILURE);
-}
+int fd = open("file.txt", O_WRONLY | O_CREAT, 0644);
+write(fd, "Hello", 5);
+close(fd);
