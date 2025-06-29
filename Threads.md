@@ -894,6 +894,7 @@ int main()
 }
 ```
 ## Implement a C program to create a thread that performs selection sort on an array of integers? 
+```c
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
