@@ -1,51 +1,41 @@
-# Linux Kernel Subsystems & File Operations in C
+# Kernel Responsibilities Overview
 
-This repository provides a hands-on introduction to Linux **kernel subsystems** through practical C programs demonstrating **low-level file operations** using system calls like `open()`, `read()`, `write()`, and more.
+## File Management (File System Management)
+This refers to how the kernel handles files and directories. As mentioned in the `README.md`, the kernel uses a **Virtual File System (VFS)** layer to provide a consistent interface for various file systems (like `ext4`, `Btrfs`, `XFS`). It manages operations like:
+- Creating, reading, writing, and deleting files
+- Handling file permissions and metadata
+  > Related examples can be found in the `File-Management.md` file.
 
-These programs are intended for students, system programmers, and Linux enthusiasts who want to understand how system calls interact directly with various kernel components.
+## Memory Management
+The kernel is responsible for allocating and managing both **physical RAM** and **virtual memory** for all running processes. According to the `README.md`, it handles:
+- **Paging** (moving data between RAM and swap space)
+- **Memory protection**, ensuring that processes cannot access each other’s memory
+- Management of the **unique virtual memory address space** for each process
+- > Related examples can be found in the `Memory Management.md` file.
 
----
+## Process Management
+This describes how the kernel handles the execution of programs. As per the `README.md`, the kernel is a **multitasking** operating system that manages both **processes** and **threads**. It includes:
+- A **scheduler** to allocate CPU time efficiently
+- Process creation (`fork()`, `exec()`)
+- Managing process states (e.g., running, sleeping, zombie)
+- **Inter-Process Communication (IPC)**
+  > Related examples can be found in the `Process Management.md` file.
 
-## Table of Contents
+## Threads
+Threads are lightweight units of execution within a process and are part of **Process Management**. They share the same memory space as their parent process, which allows:
+- Faster communication between threads compared to processes
+- More efficient task execution
+> Examples using `pthreads` can be found in the `Threads.md` file.
 
-- [1. Overview of Linux Kernel Subsystems](#1-overview-of-linux-kernel-subsystems)
-- [2. File Operations via System Calls](#2-file-operations-via-system-calls)
-- [3. Key Kernel Subsystems](#3-key-kernel-subsystems)
-  - [3.1 Virtual File System (VFS)](#31-virtual-file-system-vfs)
-  - [3.2 Process Management](#32-process-management)
-  - [3.3 Memory Management](#33-memory-management)
-  - [3.4 Inter-Process Communication (IPC)](#34-inter-process-communication-ipc)
-  - [3.5 Device Drivers](#35-device-drivers)
-- [4. Common System Calls](#4-common-system-calls)
-- [5. Error Handling](#5-error-handling)
-- [6. How to Compile & Run](#6-how-to-compile--run)
-- [7. License](#7-license)
+## Signals
+While not listed as a separate management area, **signals** are an important part of Process Management and IPC. They are:
+- **Software interrupts** used to notify a process of an event
+- Used for events like termination, Ctrl+C interrupts, or errors (e.g., division by zero)
+- Processes can also send signals to one another
 
----
-
-## 1. Overview of Linux Kernel Subsystems
-
-The Linux kernel is modular and consists of several key subsystems:
-
-- **VFS (Virtual File System)** – unified interface for all filesystems.
-- **Scheduler** – manages process execution and CPU time.
-- **Memory Manager** – handles physical and virtual memory.
-- **IPC (Inter-Process Communication)** – enables processes to exchange data.
-- **Networking Stack** – manages sockets and protocols.
-- **Device Drivers** – control access to hardware.
-
----
-
-## 2. File Operations via System Calls
-
-Linux provides low-level system calls for file manipulation, allowing direct interaction with the kernel. These operations bypass the standard C library (`stdio.h`) and use:
-
-- `open()`, `read()`, `write()`, `close()`
-- `lseek()`, `stat()`, `unlink()`, etc.
-
-These are essential for:
-- Embedded systems
-- Real-time applications
-- OS and kernel-level development
-
----
+## IPC Mechanism (Inter-Process Communication)
+Falls under **Process Management**. IPC refers to how processes communicate and synchronize with one another. The `README.md` mentions:
+- **Pipes**: One-way communication between related processes
+- **Message Queues**: Exchange messages through a queue system
+- **Shared Memory**: Multiple processes access the same memory region — the fastest form of IPC
+> Related examples can be found in the `Process Management.md` file.
