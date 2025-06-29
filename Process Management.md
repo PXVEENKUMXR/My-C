@@ -1,6 +1,6 @@
-#Process Management
+# Process Management
 ```
-##Write a C program to demonstrate the use of fork() system call. 
+## Write a C program to demonstrate the use of fork() system call. 
 ```c
 #include<stdio.h>
 #include<unistd.h>
