@@ -1,5 +1,5 @@
 # File Management 
----
+
 ## Write a C program to create a new text file and write "Hello, World!" to it?
 
 ```c
