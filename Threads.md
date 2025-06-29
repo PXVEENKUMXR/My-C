@@ -361,7 +361,9 @@ int main()
         return 0;
 }
 ```
-## #include<stdio.h>
+## Write a C program to create a thread that prints "Hello, World!" with thread synchronization?
+```c
+#include<stdio.h>
 #include<stdlib.h>
 #include<pthread.h>
 
@@ -400,8 +402,7 @@ int main()
         return 0;
 }
 ```
-## Develop a C program to create two threads that print their thread IDs and synchronize their 
-output?
+## Develop a C program to create two threads that print their thread IDs and synchronize their output?
 ```c
 #include<stdio.h>
 #include<stdlib.h>
@@ -455,15 +456,10 @@ int main()
 #include<unistd.h>
 #include<time.h>
 
-
 #define SIZE 5
-
 int buffer[SIZE];
-
 int idx = 0;
-
 pthread_mutex_t lock;
-
 void *random_number(void *args)
 {
         while(1)
@@ -474,9 +470,7 @@ void *random_number(void *args)
                         pthread_mutex_unlock(&lock);
                         break;
                 }
-
                 int num = rand() % 100;
-
                 buffer[idx] = num;
                 printf("Generated number at index %d : %d\n",idx,num);
                 idx++;
@@ -486,7 +480,6 @@ void *random_number(void *args)
         }
         return NULL;
 }
-
 int main()
 {
         srand(time(NULL));
@@ -497,13 +490,11 @@ int main()
                 perror("Mutex initialization failed");
                 exit(EXIT_FAILURE);
         }
-
         if(pthread_create(&th,NULL,random_number,NULL) != 0)
         {
                 perror("Failed to create thread");
                 exit(EXIT_FAILURE);
         }
-
         pthread_join(th,NULL);
 
         printf("\nRandom Numbers : \n");
