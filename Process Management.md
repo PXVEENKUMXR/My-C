@@ -266,9 +266,8 @@ int main()
         return 0;
 }
 ```
-##  Write a C program to demonstrate the use of the system() function for executing shell 
-commands. 
-
+##  Write a C program to demonstrate the use of the system() function for executing shell commands. 
+```c
 #include<stdio.h>
 #include<unistd.h>
 #include<sys/types.h>
