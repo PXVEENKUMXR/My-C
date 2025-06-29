@@ -1025,8 +1025,7 @@ int main()
         return 0;
 }
 ```
-## Write a C program to create a child process using fork() and demonstrate process 
-communication using named pipes (FIFOs). 
+## Write a C program to create a child process using fork() and demonstrate process communication using named pipes (FIFOs). 
 ```c
 #include<stdio.h>
 #include<stdlib.h>
