@@ -1792,3 +1792,787 @@ int main()
     return 0;
 }
 ```
+## Write a C program to create a thread that generates a random password?
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <time.h>
+
+char password[100];
+int len;
+
+void *generate_password(void *arg)
+{
+    char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    int charset_len = sizeof(charset) - 1;
+
+    srand(time(NULL));
+    for (int i = 0; i < len; i++)
+    {
+        password[i] = charset[rand() % charset_len];
+    }
+    password[len] = '\0';
+
+    return NULL;
+}
+
+int main()
+{
+    printf("Enter password length : ");
+    scanf("%d", &len);
+
+    pthread_t th;
+    pthread_create(&th, NULL, generate_password, NULL);
+    pthread_join(th, NULL);
+
+    printf("Generated Password : %s\n", password);
+
+    return 0;
+}
+```
+## Implement a C program to create a thread that checks if a number is even or odd?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<pthread.h>
+
+void *even_odd(void *args)
+{
+        int num=*(int *)args;
+        if(num % 2 == 0)
+        {
+                printf("The number '%d' is even\n",num);
+        }
+        else
+        {
+                printf("The number '%d' is odd\n",num);
+        }
+        return NULL;
+}
+
+int main()
+{
+        pthread_t th;
+        int number;
+        printf("Enter a number : ");
+        scanf("%d",&number);
+
+        pthread_create(&th,NULL,even_odd,&number);
+        pthread_join(th,NULL);
+        return 0;
+}
+```
+## Develop a C program to create a thread that calculates the sum of elements in an array? 
+```c
+#include <stdlib.h>
+#include <pthread.h>
+
+int sum = 0;
+
+struct data
+{
+    int *arr;
+    int size;
+};
+
+void *sum_array(void *args)
+{
+    struct data *input = (struct data *)args;
+    int *arr = input->arr;
+    int size = input->size;
+
+    for (int i = 0; i < size; i++)
+    {
+        sum += arr[i];
+    }
+
+    printf("The sum of elements is : %d\n", sum);
+    return NULL;
+}
+
+int main()
+{
+    pthread_t th;
+    int n;
+
+    printf("Enter the size of array : ");
+    scanf("%d", &n);
+
+    int arr[n];
+    printf("Enter the elements in array : ");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+
+    struct data input;
+    input.arr = arr;
+    input.size = n;
+
+    pthread_create(&th, NULL, sum_array, &input);
+    pthread_join(th, NULL);
+
+    return 0;
+}
+```
+## Write a C program to create a thread that calculates the factorial of numbers from 1 to 10? 
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<pthread.h>
+
+void *fact(void *args)
+{
+        for(int i=1;i<=10;i++)
+        {
+                unsigned long long fact = 1;
+                for(int j=1;j<=i;j++)
+                {
+                        fact *= j;
+                }
+                printf("The factorial of '%d': %llu\n",i,fact);
+        }
+
+        return NULL;
+
+
+}
+int main()
+{
+        pthread_t th;
+
+        if(pthread_create(&th,NULL,fact,NULL) != 0)
+        {
+                perror("Failed to create thread");
+                return 1;
+        }
+
+        if(pthread_join(th,NULL) != 0)
+        {
+                perror("Failed to join thread");
+                return 1;
+        }
+
+        return 0;
+}
+```
+## Implement a C program to create a thread that calculates the area of a rectangle? 
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<pthread.h>
+
+typedef struct
+{
+        double length;
+        double width;
+} rectangle;
+
+void *area_rectangle(void *args)
+{
+
+        rectangle *rect=(rectangle *)args;
+        double area = rect->length * rect->width;
+
+        printf("The area of rectangle is : %.2f\n",area);
+        return NULL;
+}
+
+int main()
+{
+        pthread_t th;
+
+        rectangle rect;
+
+        printf("Enter length of rectangle : ");
+        scanf("%lf",&rect.length);
+        printf("Enter width of rectangle : ");
+        scanf("%lf",&rect.width);
+
+
+        if(pthread_create(&th,NULL,area_rectangle,&rect) != 0)
+        {
+                perror("Failed to create thread");
+                return 1;
+        }
+
+        if(pthread_join(th,NULL) != 0)
+        {
+                perror("Failed to join thread");
+                return 1;
+        }
+        return 0;
+}
+```
+## Develop a C program to create a thread that generates random numbers?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<pthread.h>
+#include<time.h>
+
+void *random_number(void *args)
+{
+        int count = *(int *)args;
+        printf("Random numbers\n");
+        for(int i=0;i<count;i++)
+        {
+                int number = rand() % 100;
+                printf("%d : %d\n",i+1,number);
+        }
+        return NULL;
+}
+
+int main()
+{
+        pthread_t th;
+        int count;
+
+        printf("Enter how many random numbers to generate : ");
+        scanf("%d",&count);
+
+        srand(time(NULL));
+        if(pthread_create(&th,NULL,random_number,&count) != 0)
+        {
+                perror("Failed to create thread");
+                exit(EXIT_FAILURE);
+        }
+
+        if(pthread_join(th,NULL) != 0)
+        {
+                perror("Failed to join thread");
+                return 1;
+        }
+
+        return 0;
+}
+```
+## Implement a C program to create a thread that sorts an array of integers? 
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<pthread.h>
+
+typedef struct
+{
+        int *arr;
+        int size;
+} array;
+
+void *sort_array(void *args)
+{
+        array *data=(array *)args;
+        int *arr=data->arr;
+        int size =data->size;
+
+        for(int i=0;i < size - 1;i++)
+        {
+                for(int j=0; j <size-i-1;j++)
+                {
+                        if(arr[j] > arr[j+1])
+                        {
+                                int temp =arr[j];
+                                arr[j]=arr[j+1];
+                                arr[j+1]=temp;
+                        }
+                }
+        }
+
+        printf("The sorted array : ");
+        for(int i=0;i<size;i++)
+        {
+                printf("%3d",arr[i]);
+        }
+        printf("\n");
+        return NULL;
+}
+
+int main()
+{
+        pthread_t th;
+        int n;
+
+        printf("Enter number of elements in array : ");
+        scanf("%d",&n);
+
+        int *arr=malloc(n*sizeof(int));
+        if(arr == NULL)
+        {
+                perror("Memory allocation failed");
+                return 1;
+        }
+
+        printf("Enter %d integers\n",n);
+        for(int i=0;i<n;i++)
+        {
+                scanf("%d",&arr[i]);
+        }
+
+        array data={arr,n};
+
+        pthread_create(&th,NULL,sort_array,&data);
+        pthread_join(th,NULL);
+
+        free(arr);
+        return 0;
+}
+```
+## Write a C program to create a thread that searches for a given number in an array? 
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<pthread.h>
+
+typedef struct
+{
+        int *arr;
+        int size;
+        int key;
+} array;
+void *search_num(void *args)
+{
+        array *data=(array *)args;
+
+        int *arr = data->arr;
+        int size = data->size;
+        int target = data->key;
+
+        for(int i=0 ; i < size;i++)
+        {
+                if(arr[i] == target)
+                {
+                        printf("Number '%d' found at index %d\n",target,i);
+                        return EXIT_SUCCESS;
+                }
+        }
+        printf("Number not found in the array\n");
+        return NULL;
+}
+
+int main()
+{
+        pthread_t th;
+
+        int n;
+        printf("Enter number of elements : ");
+        scanf("%d",&n);
+        int arr[n];
+        printf("Enter elements in array : ");
+        for(int i=0;i<n;i++)
+        {
+                scanf("%d",&arr[i]);
+        }
+        int key = 5;
+        array data = {arr,n,key};
+        if(pthread_create(&th,NULL,search_num,&data) != 0)
+        {
+                perror("Failed to create thread");
+                return 1;
+        }
+
+        if(pthread_join(th,NULL) != 0)
+        {
+                perror("Failed to join the thread");
+                return 1;
+        }
+        return 0;
+}
+```
+## Develop a C program to create a thread that reverses a given string? 
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<pthread.h>
+#include<string.h>
+
+#define SIZE 100
+
+void *reverse(void *arg)
+{
+        char *str=(char *)arg;
+        int start=0;
+        int end = strlen(str) -1;
+        while(start < end)
+        {
+                char temp=str[start];
+                str[start]=str[end];
+                str[end]=temp;
+                start++;
+                --end;
+        }
+        return NULL;
+}
+
+int main()
+{
+        pthread_t th;
+        char str[SIZE];
+        printf("Enter a string : ");
+        fgets(str,sizeof(str),stdin);
+        str[strcspn(str,"\n")]='\0';
+
+        if(pthread_create(&th,NULL,reverse,str) != 0)
+        {
+                perror("Failed to create thread");
+                return 1;
+        }
+
+        if(pthread_join(th,NULL) != 0)
+        {
+                perror("Failed to join thread");
+                return 1;
+        }
+        printf("The reversed string : %s\n",str);
+        return 0;
+}
+```
+## Implement a C program to create a thread that reads input from the user?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<pthread.h>
+
+void *read_input(void *args)
+{
+        char input[100];
+
+        printf("Enter a string : ");
+        if(fgets(input,sizeof(input),stdin) != NULL)
+        {
+                printf("You entered : %s\n",input);
+        }
+        else
+        {
+                printf("Failed to read input\n");
+        }
+        return NULL;
+}
+
+int main()
+{
+        pthread_t th;
+
+        if(pthread_create(&th,NULL,read_input,NULL) != 0)
+        {
+                perror("Failed to create thread");
+                exit(EXIT_FAILURE);
+        }
+
+        if(pthread_join(th,NULL) != 0)
+        {
+                perror("Failed to join thread");
+                exit(EXIT_FAILURE);
+        }
+        return 0;
+}
+```
+## Develop a C program to create a thread that calculates the length of a given string? 
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<pthread.h>
+#include<string.h>
+
+void *string_length(void *args)
+{
+        char *str=(char *)args;
+        int count=0;
+        while( *str!= '\0')
+        {
+                count++;
+
+                ++str;
+        }
+        printf("The length of string : %d\n",count);
+        return NULL;
+}
+
+int main()
+{
+        pthread_t th;
+
+        char str[100];
+        printf("Enter a string : ");
+        fgets(str,sizeof(str),stdin);
+        str[strcspn(str,"\n")]='\0';
+
+        pthread_create(&th,NULL,string_length,str);
+
+        pthread_join(th,NULL);
+        return 0;
+}
+```
+## Write a C program to create two threads using pthreads library. Each thread should print "Hello, World!" along with its thread ID? 
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<pthread.h>
+
+void *thread1(void *arg)
+{
+        printf("Thread 1    : Hello, World!\n");
+        pthread_t id=pthread_self();
+
+        printf("Thread 1 ID : %ld\n",id);
+}
+void *thread2(void *arg)
+{
+        printf("Thread 2    : Hello, World!\n");
+        pthread_t id=pthread_self();
+
+        printf("Thread 2 ID : %ld\n",id);
+}
+
+int main()
+{
+        pthread_t th1,th2;
+
+        pthread_create(&th1,NULL,thread1,NULL);
+        pthread_create(&th2,NULL,thread2,NULL);
+
+        pthread_join(th1,NULL);
+        pthread_join(th2,NULL);
+
+        return 0;
+}
+```
+## Modify the previous program to pass arguments to the threads and print those arguments along with the thread ID? 
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<pthread.h>
+
+void *thread1(void *arg)
+{
+        char *str=(char *)arg;
+        printf("%s\n",str);
+        pthread_t id=pthread_self();
+
+        printf("Thread 1 ID : %ld\n",id);
+}
+void *thread2(void *arg)
+{
+        char *str =(char *)arg;
+        printf("%s\n",str);
+        pthread_t id=pthread_self();
+
+        printf("Thread 2 ID : %ld\n",id);
+}
+
+int main()
+{
+        pthread_t th1,th2;
+
+        char str1[]="This is Thread 1";
+        char str2[]="This is Thread 2";
+
+        pthread_create(&th1,NULL,thread1,str1);
+        pthread_create(&th2,NULL,thread2,str2);
+
+        pthread_join(th1,NULL);
+        pthread_join(th2,NULL);
+
+        return 0;
+}
+```
+## Write a C program to demonstrate thread synchronization using mutex locks. Create two threads that increment a shared variable using mutex locks to ensure proper synchronization?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<pthread.h>
+
+pthread_mutex_t mutex;
+int var = 100;
+
+void *shared_thread1(void *args)
+{
+        pthread_mutex_lock(&mutex);
+
+        printf("Thread 1 : %d\n",++var);
+
+        pthread_mutex_unlock(&mutex);
+        return NULL;
+}
+void *shared_thread2(void *args)
+{
+        pthread_mutex_lock(&mutex);
+
+        printf("Thread 2 : %d\n",++var);
+
+        pthread_mutex_unlock(&mutex);
+        return NULL;
+}
+
+int main()
+{
+        printf("Main : %d\n",var);
+        pthread_t t1,t2;
+        pthread_mutex_init(&mutex,NULL);
+
+        pthread_create(&t1,NULL,shared_thread1,NULL);
+        pthread_create(&t2,NULL,shared_thread2,NULL);
+
+        pthread_join(t1,NULL);
+        pthread_join(t2,NULL);
+
+        pthread_mutex_lock(&mutex);
+        printf("Main : Final Value = %d\n",var);
+        pthread_mutex_unlock(&mutex);
+
+        pthread_mutex_destroy(&mutex);
+        return 0;
+}
+```
+## Extend the previous program to use semaphore instead of mutex locks for thread 
+synchronization?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<pthread.h>
+#include<sys/ipc.h>
+#include<semaphore.h>
+
+int var = 100;
+sem_t sem;
+
+void *shared_thread(void *arg)
+{
+        sem_wait(&sem);
+        ++var ;
+        printf("Thread %ld : %d\n",(long)arg,var);
+        sem_post(&sem);
+        return NULL;
+}
+
+int main()
+{
+        printf("Main : %d\n",var);
+        pthread_t t1,t2;
+        sem_init(&sem,0,1);
+
+        pthread_create(&t1,NULL,shared_thread,(void*)1);
+        pthread_create(&t2,NULL,shared_thread,(void*)2);
+
+        pthread_join(t1,NULL);
+        pthread_join(t2,NULL);
+
+        sem_destroy(&sem);
+        return 0;
+}
+```
+## Write a C program to implement the producer-consumer problem using pthreads. Create two threads - one for producing items and another for consuming items from a shared buffer?
+```c
+#include<stdio.h>
+#include<fcntl.h>
+#include<unistd.h>
+#include<pthread.h>
+#include<stdlib.h>
+
+#define THREADS 2
+#define BUFSIZE 1024
+
+int sfd,dfd;
+pthread_mutex_t lock;
+
+void *copy(void *arg)
+{
+        char data[BUFSIZE];
+        ssize_t n;
+
+        while(1)
+        {
+                pthread_mutex_lock(&lock);
+
+                n=read(sfd,data,BUFSIZE);
+
+                if(n>0)
+                {
+                        write(dfd,data,n);
+                }
+                pthread_mutex_unlock(&lock);
+                if(n <= 0)
+                {
+                        break;
+                }
+        }
+        return NULL;
+}
+
+int main()
+{
+        if((sfd = open("source.txt",O_RDONLY)) < 0)
+        {
+                perror("Error reading file");
+                return EXIT_FAILURE;
+        }
+
+        if((dfd = open("destination.txt",O_WRONLY | O_CREAT | O_TRUNC,0755)) < 0)
+        {
+                perror("Error writing file");
+                return EXIT_FAILURE;
+        }
+
+        pthread_mutex_init(&lock,NULL);
+
+        pthread_t t[THREADS];
+
+        for(int i = 0; i < THREADS ; i++)
+        {
+                pthread_create(&t[i],NULL,copy,NULL);
+        }
+
+        for(int i=0;i<THREADS;i++)
+        {
+                pthread_join(t[i],NULL);
+        }
+
+        close(sfd);
+        close(dfd);
+
+        pthread_mutex_destroy(&lock);
+        printf("File copied from 'source.txt' to 'destination.txt'\n");
+        return 0;
+}
+```
+## Write a C program to demonstrate thread cancellation. Create a thread that runs an infinite loop and cancels it after a certain condition is met from the main thread? 
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<pthread.h>
+#include<unistd.h>
+
+void *infinite(void *arg)
+{
+        printf("Thread working in infinite loop\n");
+        while(1)
+        {
+                printf("Thread running..\n");
+                sleep(1);
+                pthread_testcancel();
+        }
+        return NULL;
+}
+
+int main()
+{
+        pthread_t thread;
+
+        if(pthread_create(&thread,NULL,infinite,NULL) != 0)
+        {
+                perror("Failed to create thread");
+                return EXIT_FAILURE;
+        }
+        sleep(10);
+
+        printf("Main : Cancelling the thread\n");
+        pthread_cancel(thread);
+
+        if(pthread_join(thread,NULL) != 0)
+        {
+                perror("Failed to join thread");
+                return 1;
+        }
+        printf("Main : Cancelled thread\n");
+        return 0;
+}
+``` 
