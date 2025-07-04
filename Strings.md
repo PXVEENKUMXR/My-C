@@ -1,6 +1,5 @@
 # Strings
-```
-```
+---
 ## Find length of the second last word in a string ?
 ```c
 #include<stdio.h>
