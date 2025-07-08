@@ -53,7 +53,8 @@ int main()
                 perror("Failed to send SIGUSR1 Signal");
                 return 1;
         }
-        printf("SIGUSR1 Signal sent successfully to process : %d\n",target);        return 0;
+        printf("SIGUSR1 Signal sent successfully to process : %d\n",target);
+        return 0;
 }
 ```
 ### Receiver
@@ -84,7 +85,7 @@ int main()
                 printf("Running..\n");
                 sleep(1.5);
         }
-
+        return 0;
 }
 ```
 ## Create a C program to ignore the SIGCHLD signal temporarily?
