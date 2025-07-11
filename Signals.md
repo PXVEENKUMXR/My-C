@@ -211,3 +211,34 @@ int main()
     return 0;
 }
 ```
+## Write a C program to install a custom signal handler for SIGTERM?
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<signal.h>
+
+void sig_handler(int signal)
+{
+        printf("Received SIGTERM (signal %d)\Cn",signal);
+        exit(0);
+}
+int main()
+{
+        if(signal(SIGTERM,sig_handler) == SIG_ERR)
+        {
+                perror("signal");
+                return 1;
+        }
+
+        printf("Process PID : %d\n",getpid());
+        printf("Waiting for SIGTERM..\n");
+
+        while(1)
+        {
+                pause();
+        }
+        return 0;
+}
+```
+## 
