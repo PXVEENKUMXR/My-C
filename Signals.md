@@ -365,3 +365,78 @@ int main()
         return 0;
 }
 ```
+## Write a program to handle the SIGTSTP signal (terminal stop).
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<signal.h>
+
+void handler(int signal)
+{
+        printf("Caught SIGTSTP [Signal %d].\n",signal);
+        exit(0);
+}
+int main()
+{
+        if(signal(SIGTSTP,handler) == SIG_ERR)
+        {
+                perror("signal");
+                return 1;
+        }
+
+        printf("Process PID : %d\n",getpid());
+        printf("Press Ctrl+Z to send SIGSTOP (this would normally stop the process)..\n");
+
+        while(1)
+        {
+                printf("Running...\n");
+                sleep(2);
+        }
+        return 0;
+}
+```
+## Write a program to handle the SIGVTALRM signal (virtual timer expired). 
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<signal.h>
+#include<sys/time.h>
+#include<time.h>
+
+
+void signal_handler(int signal)
+{
+        printf("Received SIGVTALRM (signal %d) : virtual timer expired!\n",signal);}
+
+int main()
+{
+        if(signal(SIGVTALRM, signal_handler) == SIG_ERR)
+        {
+                perror("signal");
+                return 1;
+        }
+
+        struct itimerval timer;
+
+        timer.it_value.tv_sec = 1;
+        timer.it_value.tv_usec = 0;
+        timer.it_interval.tv_sec = 1;
+        timer.it_interval.tv_usec = 0;
+
+        if(setitimer(ITIMER_VIRTUAL, &timer,NULL) != 0)
+        {
+                perror("setitimer");
+                return 1;
+        }
+
+        printf("Press Ctrl+C to exit.\n");
+
+        while(1)
+        {
+                //Busy running loop
+        }
+        return 0;
+}
+```
