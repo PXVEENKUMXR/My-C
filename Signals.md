@@ -241,4 +241,127 @@ int main()
         return 0;
 }
 ```
-## 
+## Implement a program to handle the SIGSEGV signal (segmentation fault). 
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<signal.h>
+
+void handler(int signal)
+{
+        printf("Caught sigmentation fault [signal %d]\n",signal);
+        exit(EXIT_FAILURE);
+}
+int main()
+{
+        if(signal(SIGSEGV,handler) == SIG_ERR)
+        {
+                perror("signal call failed");
+                exit(1);
+        }
+
+        printf("PID : %d\n",getpid());
+        printf("About to get a sigmentation fault...\n");
+
+        int *ptr = NULL;
+        *ptr = 10;
+
+        printf("This line will not printed\n");
+
+        return 0;
+}
+```
+## Create a program to handle the SIGILL signal (illegal instruction). 
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<signal.h>
+
+void signal_handler(int signal)
+{
+        printf("Caught SIGILL (signal %d). Exiting..\n",signal);
+        exit(0);
+}
+
+int main()
+{
+        if(signal(SIGILL,signal_handler) ==SIG_ERR)
+        {
+                perror("signal");
+                return 1;
+        }
+
+        printf("Process PID : %d\n",getpid());
+        printf("About to raise SIGILL..\n");
+
+        raise(SIGILL);
+
+        printf("This line will not print\n");
+        return 0;
+}
+```
+## Write a program to handle the SIGABRT signal (abort). 
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<signal.h>
+
+void handler(int signal)
+{
+        printf("Caught SIGABRT [Signal %d]\n",signal);
+        exit(EXIT_FAILURE);
+}
+
+int main()
+{
+        if(signal(SIGABRT,handler) == SIG_ERR)
+        {
+                perror("signal");
+                return 1;
+        }
+
+        printf("Process PID : %d\n",getpid());
+
+        printf("About to raise abort()...\n");
+
+        abort();
+
+        printf("This line will not be printed\n");
+        return 0;
+}
+```
+## Implement a C program to handle the SIGQUIT signal.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<signal.h>
+
+void handler(int signal)
+{
+        printf("Caught SIGQUIT [SIGNAL %d]\n",signal);
+        exit(0);
+}
+int main()
+{
+        if(signal(SIGQUIT,handler) == SIG_ERR)
+        {
+                perror("signal");
+                return 1;
+        }
+
+        printf("Process PID : %d\n",getpid());
+        printf("Try pressing Ctrl+\\ to send SIGQUIT...\n");
+
+        //raise(SIGQUIT);
+
+        while(1)
+        {
+                pause();
+        }
+        return 0;
+}
+```
