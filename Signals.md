@@ -440,3 +440,251 @@ int main()
         return 0;
 }
 ```
+## Write a program to implement a timer using signals.
+```c
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+int main()
+{
+    int fd = open("/dev/watchdog", O_RDWR);
+    if (fd == -1)
+    {
+        perror("Failed to open /dev/watchdog");
+        return 1;
+    }
+
+    printf("Watchdog started. Press Ctrl+C to stop.\n");
+
+    while (1)
+    {
+        write(fd, "\0", 1);
+        sleep(1);
+    }
+
+    close(fd);
+    return 0;
+}
+```
+## Write a program to demonstrate the use of sigaction() for handling signals.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<signal.h>
+
+
+void handler(int sig)
+{
+        printf("Caught SIGINT (%d). Exiting..\n",sig);
+        exit(0);
+}
+int main()
+{
+        struct sigaction sa;
+        sa.sa_handler = handler;
+        sigemptyset(&sa.sa_mask);
+        sa.sa_flags =  0;
+
+        if(sigaction(SIGINT,&sa,NULL) == -1)
+        {
+                perror("sigaction");
+                exit(1);
+        }
+        printf("Running...Press Ctrl+C\n");
+        while(1)
+        {
+                pause();
+        }
+
+        return 0;
+}
+```
+## Write a program to demonstrate how to block signals using sigprocmask().
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<signal.h>
+
+void handler(int sig)
+{
+        printf("Caught SIGINT[%d]. but not terminated\n",sig);
+}
+int main()
+{
+        sigset_t block,unblock;
+
+        signal(SIGINT,handler);
+
+        sigemptyset(&block);
+        sigaddset(&block,SIGINT);
+        sigaddset(&block,SIGQUIT);
+
+        if(sigprocmask(SIG_BLOCK,&block,NULL) == -1)
+        {
+                perror("sigprocmask");
+                exit(1);
+
+        }
+        printf("SIGINT and SIGQUIT are now blocked. Try pressing Ctrl+C or Ctrl+(\\)..\n");
+        sleep(5);
+
+        sigemptyset(&unblock);
+        sigaddset(&unblock,SIGINT);
+
+        if(sigprocmask(SIG_UNBLOCK,&unblock,NULL) == -1)
+        {
+                perror("sigprocmask");
+                exit(1);
+        }
+        printf("SIGINT is now unblocked. Try pressing Ctrl+C\n");
+        sleep(5);
+
+        return 0;
+}
+```
+## Write a program to implement a timer using signals
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<signal.h>
+#include<unistd.h>
+
+void timer_hand(int sig)
+{
+        printf("Timer expired. Caught the SIGALRM [%d]\n",sig);
+        exit(0);
+}
+int main()
+{
+        struct sigaction sa;
+        sa.sa_handler = timer_hand;
+        sa.sa_flags = 0;
+        sigemptyset(&sa.sa_mask);
+
+        if(sigaction(SIGALRM,&sa,NULL) == -1)
+        {
+                perror("sigaction");
+                EXIT_FAILURE;
+        }
+
+        printf("Setting a 5-Sec timer..\n");
+        alarm(5);
+        while(1)
+        {
+                pause();
+        }
+        printf("This message will not be displayed\n");
+        return 0;
+}
+```
+## Write a program to demonstrate signal handling in a multithreaded environment
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<signal.h>
+#include<pthread.h>
+#include<unistd.h>
+
+int run = 1;
+void handler_signal(int sig)
+{
+        printf("Received signal %d, stopping..\n",sig);
+        run = 0;
+}
+
+void *thread(void *arg)
+{
+        while(run)
+        {
+                printf("Thread is running..\n");
+                sleep(1);
+        }
+        printf("Thread exiting.\n");
+        return NULL;
+}
+
+int main()
+{
+        pthread_t t1;
+
+        signal(SIGINT,handler_signal);
+
+        pthread_create(&t1,NULL,thread,NULL);
+
+        pthread_join(t1,NULL);
+        printf("Main thread exiting.\n");
+        return 0;
+}
+```
+## Write a program to handle a real-time signal using sigqueue().
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<signal.h>
+
+void handler(int sig,siginfo_t *info,void *context)
+{
+        printf("Received signal: %d\n",sig);
+        printf("Data received : %d\n",info->si_value.sival_int);
+}
+
+int main()
+{
+        struct sigaction sa;
+        pid_t pid = getpid();
+
+        sa.sa_sigaction = handler;
+        sa.sa_flags = SA_SIGINFO;
+        sigemptyset(&sa.sa_mask);
+
+        sigaction(SIGRTMIN,&sa,NULL);
+
+        union sigval value;
+        value.sival_int = 123;
+        sigqueue(pid,SIGRTMIN,value);
+
+        pause();
+
+        return 0;
+}
+```
+## Write a program to handle the SIGTSTP signal and suspend the process.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<signal.h>
+#include<unistd.h>
+
+void handle(int sig)
+{
+        printf("\nCaught SIGTSTP [%d]. Suspending process manually..\n",sig);
+        signal(SIGTSTP,SIG_DFL);
+        raise(SIGTSTP);
+}
+int main()
+{
+        struct sigaction sa;
+
+        sa.sa_handler = handle;
+        sigemptyset(&sa.sa_mask);
+        sa.sa_flags = 0;
+
+        if(sigaction(SIGTSTP,&sa,NULL) == -1)
+        {
+                perror("sigaction");
+                exit(1);
+        }
+        printf("Running... Press Ctrl+Z to send SIGTSTP.\n");
+
+        while(1)
+        {
+                printf("Working..\n");
+                sleep(2);
+        }
+        return 0;
+}
+```
