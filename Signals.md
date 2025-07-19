@@ -770,3 +770,55 @@ int main()
         return 0;
 }
 ```
+## Write a program to demonstrate handling multiple signals using sigaction().
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<signal.h>
+#include<string.h>
+
+void handler(int sig,siginfo_t *si,void *context)
+{
+        (void*)context;
+
+        if(sig ==SIGINT)
+        {
+                printf("Caught SIGINT (Ctrl+C). Ignoring...\n");
+        }
+        else if(sig == SIGTERM)
+        {
+                printf("Caught SIGTERM. Terminating..\n");
+                exit(0);
+        }
+        else
+        {
+                printf("Caught signal [%d]\n",sig);
+        }
+}
+
+int main()
+{
+        struct sigaction sa;
+
+        memset(&sa,0,sizeof(sa));
+
+        sa.sa_sigaction = handler;
+        sa.sa_flags = SA_SIGINFO;
+
+        if(sigaction(SIGINT,&sa,NULL) == -1)
+        {
+                perror("sigaction - SIGINT");
+                return 1;
+        }
+
+        sigaction(SIGTERM,&sa,NULL);
+        printf("Process running with PID[%d]. Send SIGINT (Ctrl+C) or SIGTERM\n",getppid());
+        while(1)
+        {
+                pause();
+        }
+
+        return 0;
+}
+```
