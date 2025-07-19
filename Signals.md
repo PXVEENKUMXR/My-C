@@ -688,3 +688,85 @@ int main()
         return 0;
 }
 ```
+## Write a program to demonstrate IPC using signals
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<signal.h>
+#include<sys/wait.h>
+#include<unistd.h>
+
+void handler(int sig)
+{
+        if(sig == SIGINT)
+        {
+                printf("Received SIGINT signal from child. Terminating..\n");
+                exit(0);
+        }
+}
+int main()
+{
+        int pid = fork();
+
+        if(pid == 0)
+        {
+                printf("[Child] Waiting for signal from parent [%d]\n",getppid());
+                if(signal(SIGINT,handler) < 0)
+                {
+                        perror("signal");
+                        exit(1);
+                }
+
+                while(1)
+                {
+                        pause();
+                }
+        }
+        else
+        {
+                sleep(3);
+                printf("[Parent] Sending SIGINT signal to child[%d]\n",pid);
+                kill(pid,SIGINT);
+
+                wait(NULL);
+        }
+
+        return 0;
+}
+```#include<stdio.h>
+#include<stdlib.h>
+#include<signal.h>
+#include<unistd.h>
+
+void handle(int sig)
+{
+        printf("\nCaught SIGTSTP [%d]. Suspending process manually..\n",sig);
+        signal(SIGTSTP,SIG_DFL);
+        raise(SIGTSTP);
+}
+int main()
+{
+        struct sigaction sa;
+
+        sa.sa_handler = handle;
+        sigemptyset(&sa.sa_mask);
+        sa.sa_flags = 0;
+
+        if(sigaction(SIGTSTP,&sa,NULL) == -1)
+        {
+                perror("sigaction");
+                exit(1);
+        }
+        printf("Running... Press Ctrl+Z to send SIGTSTP.\n");
+
+        while(1)
+        {
+                printf("Working..\n");
+                sleep(2);
+        }
+        return 0;
+}
+```
+
+## Write a program to handle the SIGTSTP signal and suspend the process.
+```c
