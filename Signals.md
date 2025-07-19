@@ -733,7 +733,10 @@ int main()
 
         return 0;
 }
-```#include<stdio.h>
+```
+## Write a program to handle the SIGTSTP signal and suspend the process.
+```c
+#include<stdio.h>
 #include<stdlib.h>
 #include<signal.h>
 #include<unistd.h>
@@ -767,6 +770,3 @@ int main()
         return 0;
 }
 ```
-
-## Write a program to handle the SIGTSTP signal and suspend the process.
-```c
