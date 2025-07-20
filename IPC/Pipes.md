@@ -224,4 +224,44 @@ int main()
         return 0;
 }
 ```
+## Create a program to remove an existing message queue using the msgctl system call. Ensure that the program prompts the user for confirmation before deleting the message queue.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/ipc.h>
+#include<sys/msg.h>
 
+#define KEY 9002
+
+int main()
+{
+        int msgid;
+        char confirm;
+
+        msgid = msgget(KEY,0);
+        if(msgid == -1)
+        {
+                perror("msgget");
+                return 1;
+        }
+
+        printf("Message Queue with ID : %d\n",msgid);
+        printf("Are you sure you want to delete this message queue? (y/n) : ");
+        scanf("%c",&confirm);
+
+        if(confirm == 'y' || confirm == 'Y')
+        {
+                if(msgctl(msgid,IPC_RMID,NULL) == -1)
+                {
+                        perror("msgctl -IPC_RMID");
+                        return 1;
+                }
+                printf("Message queue deleted successfully.\n");
+        }
+        else
+        {
+                printf("Operation cancelled. Message queue not deleted.\n");
+        }
+        return 0;
+}
+```
