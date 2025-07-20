@@ -147,3 +147,81 @@ int main()
         return 0;
 }
 ```
+## Develop two separate C programs, one for sending messages and the other for receiving messages through a created message queue.
+### Sender 
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<sys/ipc.h>
+#include<sys/msg.h>
+#include<fcntl.h>
+#include<string.h>
+
+#define KEY 9002
+#define SRVMSG 9
+struct buffer
+{
+        long type;
+        char msgtext[256];
+};
+int main()
+{
+        int msgid = msgget(KEY,0);
+        if(msgid == -1)
+        {
+                perror("msgget");
+                return 1;
+        }
+        struct buffer msg;
+        msg.type = SRVMSG;
+
+        printf("Enter the message for server\n");
+        fgets(msg.msgtext,sizeof(msg.msgtext),stdin);
+        msg.msgtext[strcspn(msg.msgtext,"\n")] = '\0';
+
+        if(msgsnd(msgid,&msg,strlen(msg.msgtext)+1,0) == -1)
+        {
+                perror("msgsnd");
+                return 1;
+        }
+        printf("Message sent to server\n");
+        return 0;
+}
+```
+### Receiver
+```c
+#include<stdio.h>
+#include<sys/ipc.h>
+#include<sys/msg.h>
+
+#define KEY 9002
+#define SRVMSG 9
+struct data
+{
+        long type;
+        char msgtext[100];
+};
+int main()
+{
+        int msgid = msgget(KEY,0);
+        if(msgid == -1)
+        {
+                perror("msgget");
+                return 1;
+        }
+
+        struct data msg;
+
+        if(msgrcv(msgid,&msg,sizeof(msg.msgtext),SRVMSG,0) == -1)
+        {
+                perror("msgrcv");
+                return 1;
+        }
+
+        printf("%s\n",msg.msgtext);
+        printf("Message read from the server\n");
+        return 0;
+}
+```
+
