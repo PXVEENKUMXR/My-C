@@ -265,3 +265,197 @@ int main()
         return 0;
 }
 ```
+## Design a multithreaded program where threads communicate through named pipes.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/stat.h>
+#include<pthread.h>
+#include<fcntl.h>
+#include<unistd.h>
+#include<string.h>
+
+#define F_NAME "THREAD_FIFO"
+
+void *write_thread(void *val)
+{
+        sleep(1);
+        int fd = open(F_NAME,O_WRONLY);
+
+        char *msg = "Hey, Its for thread 2!";
+
+        write(fd,msg,strlen(msg)+1);
+        printf("Write thread : Sent to thread 2\n");
+
+        close(fd);
+        pthread_exit(NULL);
+}
+void *read_thread(void *arg)
+{
+        char buf[100];
+
+        int fd = open(F_NAME,O_RDONLY);
+
+        read(fd,buf,sizeof(buf));
+        printf("Read thread : %s\n",buf);
+
+        close(fd);
+        pthread_exit(NULL);
+}
+int main()
+{
+        if(mkfifo(F_NAME,0666) < 0)
+        {
+                perror("mkfifo failed");
+        }
+        pthread_t th1,th2;
+
+        pthread_create(&th1,NULL,write_thread,NULL);
+        pthread_create(&th2,NULL,read_thread,NULL);
+
+        pthread_join(th1,NULL);
+        pthread_join(th2,NULL);
+
+        unlink(F_NAME);
+        return 0;
+}
+```
+## Write a C program where two processes communicate using message queues. Implement sending and receiving messages between the processes using msgget, msgsnd, and msgrcv.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/ipc.h>
+#include<sys/msg.h>
+#include<string.h>
+#include<sys/wait.h>
+#include<unistd.h>
+
+#define KEY 2004
+#define SRVTYPE 10
+
+struct queue
+{
+        long type;
+        char data[100];
+};
+
+int  main()
+{
+        int pid = fork();
+
+        int msgid = msgget(KEY, IPC_CREAT | 0666);
+        if(msgid == -1)
+        {
+                perror("msgget");
+                exit(EXIT_FAILURE);
+        }
+        struct queue msg;
+
+        if(pid == 0)
+        {
+                msg.type = SRVTYPE;
+                strcpy(msg.data,"It's from the child to sweet parent.\n");
+                msgsnd(msgid,&msg,strlen(msg.data)+1,0);
+                printf("[Child] Sent to the message queue for parent.\n");
+
+        }
+        else
+        {
+                msgrcv(msgid,&msg,sizeof(msg.data),SRVTYPE,0);
+                printf("[Parent] Read from the message queue\n");
+                printf("[Parent] Message : %s",msg.data);
+
+                wait(NULL);
+
+                msgctl(msgid,IPC_RMID,NULL);
+        }
+
+        return 0;
+}
+```
+## Implement a program where two processes communicate synchronously using message queues. Ensure that one process waits for the other to finish before proceeding.
+```c
+#include<stdio.h>
+#include<sys/msg.h>
+#include<string.h>
+#include<sys/wait.h>
+#include<stdlib.h>
+#include<unistd.h>
+
+#define KEY 1000
+struct queue
+{
+        long type;
+        char data[100];
+};
+
+int main()
+{
+        int msgid;
+        if((msgid = msgget(KEY,IPC_CREAT | 0666)) < 0)
+        {
+                perror("msgget");
+                return 1;
+        }
+
+        int pid = fork();
+        if(pid < 0)
+        {
+                perror("fork failed");
+                msgctl(msgid,IPC_RMID,NULL);
+                exit(EXIT_FAILURE);
+        }
+
+        struct queue msg;
+        if(pid == 0)
+        {
+                if(msgrcv(msgid,&msg,sizeof(msg.data),1,0) < 0)
+                {
+                        perror("msgrcv");
+                        msgctl(msgid,IPC_RMID,NULL);
+                        return 1;
+                }
+
+                printf("[Child] Received  : %s\n",msg.data);
+
+                sleep(1);
+
+                msg.type = 2;
+                strcpy(msg.data,"Hi! This is to my parent.");
+                if(msgsnd(msgid,&msg,sizeof(msg.data),0) < 0)
+                {
+                        perror("msgsnd");
+                        msgctl(msgid,IPC_RMID,NULL);
+                        return 1;
+                }
+                printf("[Child] Message sent to parent\n");
+        }
+        else
+        {
+                msg.type = 1;
+                strcpy(msg.data, "Hi! This is to my child.");
+                if(msgsnd(msgid,&msg,sizeof(msg.data),0) < 0)
+                {
+                        perror("msgsnd");
+                        msgctl(msgid,IPC_RMID,NULL);
+                        return 1;
+                }
+                printf("[Parent] Message sent to child\n");
+
+                if(msgrcv(msgid,&msg,sizeof(msg.data),2,0) < 0)
+                {
+                        perror("parent msgrcv");
+                        msgctl(msgid,IPC_RMID,NULL);
+                        exit(EXIT_FAILURE);
+                }
+
+                printf("[Parent] Received : %s\n",msg.data);
+
+                wait(NULL);
+
+                msgctl(msgid,IPC_RMID,NULL);
+                printf("[Parent] Message queue removed.\n");
+        }
+        return 0;
+}
+```
