@@ -284,3 +284,60 @@ int main()
         return 0;
 }
 ```
+## Design a program that uses a message queue for synchronization between multiple processes.
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<sys/wait.h>
+#include<sys/msg.h>
+#include<string.h>
+#include<sys/types.h>
+
+#define KEY 9020
+struct queue
+{
+        long type;
+        char data[100];
+};
+int main()
+{
+        pid_t ch1,ch2;
+        int msgid = msgget(KEY,IPC_CREAT | 0666);
+        struct queue msg;
+        if((ch1 = fork()) == 0)
+        {
+                msg.type = 1;
+                strcpy(msg.data,"This is child - 1");
+                msgsnd(msgid,&msg,strlen(msg.data)+1,0);
+
+                printf("[Child 1] Sent message to queue\n");
+                exit(0);
+        }
+
+        if((ch2 = fork()) == 0)
+        {
+                msg.type = 2;
+                strcpy(msg.data,"This is child - 2");
+                msgsnd(msgid,&msg,strlen(msg.data)+1,0);
+
+                printf("[Child 2] Sent message to queue\n");
+                exit(0);
+        }
+        for(int i=0;i<2;i++)
+        {
+                if(msgrcv(msgid,&msg,sizeof(msg.data),0,0) == -1)
+                {
+                        perror("msgrcv");
+                        msgctl(msgid,IPC_RMID,NULL);
+                        exit(EXIT_FAILURE);
+                }
+                printf("[Parent] Message %d : %s\n",i+1,msg.data);
+        }
+        wait(NULL);
+        wait(NULL);
+        msgctl(msgid,IPC_RMID,NULL);
+        return 0;
+}
+```
+## 
