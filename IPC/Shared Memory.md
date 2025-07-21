@@ -123,3 +123,37 @@ int main()
 ```
 ## Write a program that dynamically creates shared memory segments based on user input
 ```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<sys/shm.h>
+#include<sys/ipc.h>
+
+#define KEY 2004
+
+int main()
+{
+        int size;
+        char *mem;
+        int shmid;
+        printf("Enter the size of shared memory : ");
+        scanf("%d",&size);
+
+        shmid = shmget(KEY,size,IPC_CREAT | 0666);
+
+        if(shmid < 0)
+        {
+                perror("shmget");
+                exit(1);
+        }
+
+        mem = (char*)shmat(shmid,NULL,0);
+
+        sprintf(mem,"We have accessed shared memory ID : %d",shmid);
+
+        printf("Shared memory : %s\n",mem);
+
+        shmdt(mem);
+
+        return 0;
+}
+```
