@@ -28,11 +28,11 @@ int main()
 ```
 ## Develop a program that attaches to a previously created shared memory segment using shmat and detaches using shmdt.
 ```c
-#include<stdio.h>
-#include<stdlib.h>
-#include<sys/shm.h>
-#include<sys/ipc.h>
-#include<string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/shm.h>
+#include <sys/ipc.h>
+#include <string.h>
 
 #define KEY 9990
 #define SIZE 1024
