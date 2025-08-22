@@ -108,3 +108,47 @@ int main()
         return 0;
 }
 ```
+## Count the number of set bits in an integer.
+```c
+#include<stdio.h>
+
+int main()
+{
+        unsigned int n;
+        printf("Enter a number : ");
+        scanf("%u",&n);
+
+        int count=0;
+        for(int i=31;i>=0;i--)
+        {
+                if((n>>i) & 1)
+                {
+                        count++;
+                }
+        }
+        printf("Number of set bits in %d : %d\n",n,count);
+        return 0;
+}
+```
+## Count the number of unset bits in an integer.
+```c
+#include<stdio.h>
+
+int main()
+{
+        unsigned int n;
+        printf("Enter a number : ");
+        scanf("%u",&n);
+        int count =0;
+        for(int i=7;i>=0;i--)
+        {
+                if(((n >> i) & 1) == 0)
+                {
+                        count++;
+                }
+        }
+        printf("Number of unset bits in  %d : %d\n",n,count);
+        return 0;
+}
+```
+## 
